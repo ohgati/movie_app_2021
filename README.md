@@ -1,5 +1,140 @@
 # 오승엽 201840217
 
+# 12월 5일 학습내용
+## Components와 Props
+
+ - 이 함수는 데이터를 가진 하나의 속성을 나타내는 데이터이고 객체 인자를 받은 후 React 엘리먼트를 반환하므로 유효한 컴포넌트입니다.
+
+- 컴포넌트 추출 : 재사용 가능한 컴포넌트를 만들어 놓는 것은 더 큰 앱에서 작업할 때 두각을 나타냅니다. UI 일부가 여러 번 사용되거나 UI 일부가 자체적으로 복잡한 경우에는 별도의 컴포넌트로 만드는 게 좋습니다.
+
+- props는 읽기 전용입니다 : 모든 React 컴포넌트는 자신의 props를 다룰 때 반드시 순수 함수처럼 동작해야 합니다
+
+## State and Lifecycle
+
+- 이 컴포넌트는 스스로 타이머를 설정할 것이고 매초 스스로 업데이트할 것입니다.
+```jsx
+function Clock(props) {
+  return (
+    <div>
+      <h1>Hello, world!</h1>
+      <h2>It is {props.date.toLocaleTimeString()}.</h2>
+    </div>
+  );
+}
+
+function tick() {
+  ReactDOM.render(
+    <Clock date={new Date()} />,
+    document.getElementById('root')
+  );
+}
+
+setInterval(tick, 1000);
+
+```
+- ### 함수 클래스로 변환하기 
+
+1. React.Component를 확장하는 동일한 이름의 ES6 class를 생성합니다.
+
+2. render()라고 불리는 빈 메서드를 추가합니다.
+
+3. 함수의 내용을 render() 메서드 안으로 옮깁니다.
+
+4. render() 내용 안에 있는 props를 this.props로 변경합니다.
+
+5. 남아있는 빈 함수 선언을 삭제합니다.
+
+```jsx
+class Clock extends React.Component {
+  render() {
+    return (
+      <div>
+        <h1>Hello, world!</h1>
+        <h2>It is {this.props.date.toLocaleTimeString()}.</h2>
+      </div>
+    );
+  }
+}
+
+```
+
+- ### 생명주기 메서드를 클래스에 추가하기
+
+    - Clock이 처음 DOM에 렌더링 될 때마다 타이머를 설정하려고 합니다. 이것은 React에서 “마운팅”이라고 합니다.
+    
+    ```jsx
+    class Clock extends React.Component {
+        constructor(props) {
+        super(props);
+        this.state = {date: new Date()};
+        }
+
+        componentDidMount() {
+        }
+
+        componentWillUnmount() {
+        }
+
+        render() {
+        return (
+             <div>
+                <h1>Hello, world!</h1>
+                <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+            </div>
+            );
+        }
+        }
+    ```
+- ### State를 올바르게 사용하기
+
+    - setState()를 호출할 때 React는 제공한 객체를 현재 state로 병합합니다.
+  ```jsx
+    componentDidMount() {
+    fetchPosts().then(response => {
+      this.setState({
+        posts: response.posts
+      });
+    });
+
+    fetchComments().then(response => {
+      this.setState({
+        comments: response.comments
+      });
+    });
+  }
+    ```
+
+- ### 데이터는 아래로 흐릅니다
+
+    - State는 종종 로컬 또는 캡슐화라고 불립니다. state가 소유하고 설정한 컴포넌트 이외에는 어떠한 컴포넌트에도 접근할 수 없습니다.
+    ```jsx
+    class Clock extends React.Component {
+        constructor(props) {
+        super(props);
+        this.state = {date: new Date()};
+        }
+
+        componentDidMount() {
+        }
+
+        componentWillUnmount() {
+        }
+
+        render() {
+        return (
+             <div>
+                <h1>Hello, world!</h1>
+                <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+            </div>
+            );
+        }
+        }
+    ```
+## 이벤트 처리하기 
+
+ - React의 이벤트는 소문자 대신 캐멀 케이스(camelCase)를 사용합니다.
+- JSX를 사용하여 문자열이 아닌 함수로 이벤트 핸들러를 전달합니다.
+
 # 11월 24일 학습내용
 ## creat-react-app으로, Remarkable 사용하기
 
