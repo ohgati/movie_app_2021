@@ -1,6 +1,200 @@
 # 오승엽 201840217
 
-# 12월 5일 학습내용
+# 12월 8일 학습내용
+## 조건부 렌더링
+
+- 엘리먼트 변수 
+    출력의 다른 부분은 변하지 않은 채로 컴포넌트의 일부를 조건부로 렌더링 할 수 있습니다.
+- [예제](https://codepen.io/gaearon/pen/QKzAgB?editors=0010)에서는 LoginControl이라는 유상태 컴포넌트 를 만들 것입니다.
+- 이 컴포넌트는 현재 상태에 맞게 LoginButton 이나 LogoutButton 을 렌더링합니다. 또한 이전 예시에서의 Greeting도 함께 렌더링합니다.
+
+## 논리 && 연산자로 If를 인라인으로 표현하기
+
+- JSX 안에는 중괄호를 이용해서 표현식을 포함 할 수 있습니다. 
+- 그 안에 JavaScript의 논리 연산자 &&를 사용하면 쉽게 엘리먼트를 조건부로 넣을 수 있습니다.
+- [예제](https://codepen.io/gaearon/pen/ozJddz?editors=0010)에서 && 뒤의 엘리먼트는 조건이 true일때 출력이 되고 조건이 false라면 React는 무시하고 건너뜁니다.
+
+## 조건부 연산자로 If-Else구문 인라인으로 표현하기
+- 엘리먼트를 조건부로 렌더링하는 다른 방법은 조건부 연산자인 condition ? true: false를 사용하는 것입니다.
+- 아래 예시처럼 조건이 너무 복잡하다면 컴포넌트를 분리하기 좋을 때 일 수도 있다
+```jsx
+render() {
+  const isLoggedIn = this.state.isLoggedIn;
+  return (
+    <div>
+      {isLoggedIn
+        ? <LogoutButton onClick={this.handleLogoutClick} />
+        : <LoginButton onClick={this.handleLoginClick} />
+      }
+    </div>
+  );
+}
+```
+## 컴포넌트가 렌더링하는 것을 막기
+- 가끔 다른 컴포넌트에 의해 렌더링될 때 컴포넌트 자체를 숨기고 싶을 때가 있을 수 있습니다. 이때는 렌더링 결과를 출력하는 대신 null을 반환하면 해결할 수 있습니다.
+- [예제](https://codepen.io/gaearon/pen/Xjoqwm?editors=0010)에서는 WarningBanner가 warn prop의 값에 의해서 렌더링됩니다. prop이 false라면 컴포넌트는 렌더링하지 않게 됩니다.
+
+# 리스트와 key
+## 여러개의 컴포넌트 렌더링 하기
+- 아래의 JavaScript map() 함수를 사용하여 numbers 배열을 반복 실행하고 각 항목에 대해 li 엘리먼트를 반환하고 엘리먼트 배열의 결과를 listItems에 저장합니다.
+```jsx
+const numbers = [1, 2, 3, 4, 5];
+const listItems = numbers.map((numbers) =>
+  <li>{numbers}</li>
+);
+
+ReactDOM.render(
+  <ul>{listItems}</ul>,
+  document.getElementById('root')
+);
+```
+## 기본 리스트 컴포넌트
+- 아래 코드를 실행하면 리스트의 각 항목에 key를 넣어야 한다고 경고가 뜨는데 numbers.map() 안에서 리스트의 각 항목에 key를 할당하여 키 누락 문제를 해결됩니다
+```jsx
+function NumberList(props) {
+  const numbers = props.numbers;
+  const listItems = numbers.map((number) =>
+    <li>{number}</li>
+  );
+  return (
+    <ul>{listItems}</ul>
+  );
+}
+
+const numbers = [1, 2, 3, 4, 5];
+ReactDOM.render(
+  <NumberList numbers={numbers} />,
+  document.getElementById('root')
+);
+```
+## Key
+- Key는 React가 어떤 항목을 변경, 추가 또는 삭제할지 식별하는 것을 돕고 엘리먼트에 안정적인 고유성을 부여하기 위해 배열 내부의 엘리먼트에 지정해야 합니다.
+- 대부분의 경우 데이터의 ID를 key로 사용합니다
+- key에 인덱스를 사용하는 것은 권장하지 않습니다. 이로 인해 성능이 저하되거나 컴포넌트의 state와 관련된 문제가 발생할 수 있습니다.
+
+### Key로 컴포넌트 추출하기
+- ListItem 컴포넌트를 추출 한 경우 ListItem 안에 있는 li 엘리먼트가 아니라 배열의 ListItem 엘리먼트가 key를 가져야 합니다.
+
+### Key는 형제 사이에서만 고유한 값이어야 한다.
+- Key는 배열 안에서 형제 사이에서 고유해야 하고 전체 범위에서 고유할 필요는 없고 두 개의 다른 배열을 만들 때 동일한 key를 사용할 수 있습니다.
+
+### JSX에 map() 포함시키기
+- JSX를 사용하면 중괄호 안에 모든 표현식을 포함 시킬 수 있으므로 map() 함수의 결과를 인라인으로 처리할 수 있습니다.
+- 이 방식을 사용하면 코드가 더 깔끔해 지지만, 이 방식을 남발하는 것은 좋지 않습니다. JavaScript와 마찬가지로 가독성을 위해 변수로 추출해야 할지 아니면 인라인으로 넣을지는 개발자가 직접 판단해야 합니다.
+- map() 함수가 너무 중첩된다면 컴포넌트로 추출 하는 것이 좋습니다.
+
+# 폼
+## 제어 컴포넌트 (Controlled Component)
+- [예제](https://codepen.io/gaearon/pen/VmmPgp?editors=0010)에서 value 어트리뷰트는 폼 엘리먼트에 설정되므로 표시되는 값은 항상 this.state.value가 되고 React state는 신뢰 가능한 단일 출처 (single source of truth)가 됩니다.
+- React state를 업데이트하기 위해 모든 키 입력에서 handleChange가 동작하기 때문에 사용자가 입력할 때 보여지는 값이 업데이트됩니다.
+## textarea 태그
+- 아래 코드는 this.state.value를 생성자에서 초기화하므로 textarea는 일부 텍스트를 가진채 시작되는 점을 주의합니다
+```jsx
+class EssayForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: 'Please write an essay about your favorite DOM element.'
+    };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleSubmit(event) {
+    alert('An essay was submitted: ' + this.state.value);
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Essay:
+          <textarea value={this.state.value} onChange={this.handleChange} />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+    );
+  }
+}
+```
+## select 태그
+- [예제](https://codepen.io/gaearon/pen/JbbEzX?editors=0010)에서 selected 어트리뷰트를 사용하는 대신 최상단 select태그에 value 어트리뷰트를 사용합니다. 
+- 한 곳에서 업데이트만 하면되기 때문에 제어 컴포넌트에서 사용하기 더 편합니다. 
+
+## file input 태그
+- input type="file">는 사용자가 하나 이상의 파일을 자신의 장치 저장소에서 서버로 업로드하거나 File API를 통해 JavaScript로 조작할 수 있다.
+
+## 다중 입력 제어하기
+- [예제](https://codepen.io/gaearon/pen/wgedvV?editors=0010)는 각 엘리먼트에 name 어트리뷰트를 추가하고 event.target.name 값을 통해 핸들러가 어떤 작업을 할 지 선택할 수 있게 해줬습니다
+## 제어되는 Input Null 값
+- 제어 컴포넌트에 value prop을 지정하면 의도하지 않는 한 사용자가 변경할 수 없습니다. value를 설정했는데 여전히 수정할 수 있다면 실수로 value를 undefined나 null로 설정했을 수 있습니다.
+```jsx
+ReactDOM.render(<input value="hi" />, mountNode);
+
+setTimeout(function() {
+  ReactDOM.render(<input value={null} />, mountNode);
+}, 1000);
+```
+# State 끌어올리기
+## 두 번째 Input 추가하기
+- [예제](https://codepen.io/gaearon/pen/jGBryx?editors=0010)에서 두 개의 입력 필드를 갖게 되었는데 둘 중 하나에 온도를 입력하더라도 다른 하나는 갱신되지 않는 문제가 있습니다.
+- Calculator에서 BoilingVerdict도 역시 보여줄 수 없는 상황입니다. 현재 입력된 온도 정보가 TemperatureInput 안에 숨겨져 있으므로 Calculator는 그 값을 알 수 없기 때문입니다.
+## 변환 함수 작성하기
+- 아래 함수는 올바르지 않은 temperature 값에 대해서는 빈 문자열을 반환하고 값을 소수점 세 번째 자리로 반올림하여 출력합니다.
+```jsx
+function tryConvert(temperature, convert) {
+  const input = parseFloat(temperature);
+  if (Number.isNaN(input)) {
+    return '';
+  }
+  const output = convert(input);
+  const rounded = Math.round(output * 1000) / 1000;
+  return rounded.toString();
+}
+```
+## state 끌어올리기
+- [예제](https://codepen.io/gaearon/pen/WZpxpz?editors=0010)에서 어떤 입력 필드를 수정하든 간에 Calculator의 this.state.temperature와 this.state.scale이 갱신된다
+- 입력 필드 중 하나는 있는 그대로의 값을 받으므로 사용자가 입력한 값이 보존되고, 다른 입력 필드의 값은 항상 다른 하나에 기반해 재계산됩니다.
+
+        ○ DOM <input>의 onChange에 지정된 함수를 호출합니다. 위 예시의 경우 TemperatureInput의 handleChange 메서드에 해당합니다.
+        ○ Calculator가 전달한 새 props와 함께 각 TemperatureInput 컴포넌트의 render 메서드를 호출합니다. 그러면서 UI가 어떻게 보여야 할지를 파악합니다.
+        ○ DOM은 물의 끓는 여부와 올바른 입력값을 일치시키는 작업과 함께 DOM을 갱신합니다. 값을 변경한 입력 필드는 현재 입력값을 그대로 받고, 다른 입력 필드는 변환된 온도 값으로 갱신됩니다.
+# 합성 vs 상속
+## 컴포넌트에서 다른 컴포넌트를 담기
+- [예제](https://codepen.io/gaearon/pen/ozqNOV?editors=0010)에서 <Contacts />와 <Chat />같은 React 엘리먼트는 단지 객체이기 때문에 다른 데이터처럼 prop으로 전달할 수 있습니다. 
+## 특수화
+- [예제](https://codepen.io/gaearon/pen/kkEaOZ?editors=0010)에서 합성을 통해 해결할 수 있습니다. 더 “구체적인” 컴포넌트가 “일반적인” 컴포넌트를 렌더링하고 props를 통해 내용을 구성합니다.
+## React로 생각하기
+    
+    1. UI를 컴포넌트 계층 구조로 나누기
+    - 첫 번째 일은 모든 컴포넌트(와 하위 컴포넌트)의 주변에 박스를 그리고 그 각각에 이름을 붙이는 것입니다.
+    - JSON 데이터를 유저에게 보여주기 때문에, 데이터 모델이 적절하게 만들어졌다면, UI(컴포넌트 구조)가 잘 연결될 것입니다.
+    - 각 컴포넌트가 데이터 모델의 한 조각을 나타내도록 분리합니다
+    2. React로 정적인 버전 만들기
+    - 데이터 모델을 렌더링하는 앱의 정적 버전을 만들기 위해 다른 컴포넌트를 재사용하는 컴포넌트를 만들고 props 를 이용해 데이터를 전달해줍시다.
+    - props는 부모가 자식에게 데이터를 넘겨줄 때 사용할 수 있는 방법입니다. 
+    - React의 단방향 데이터 흐름(one-way data flow) (또는 단방향 바인딩(one-way binding))는 모든 것을 모듈화 하고 빠르게 만들어줍니다.
+    3. UI state에 대한 최소한의 (하지만 완전한) 표현 찾아내기
+    - UI를 상호작용하게 만들려면 기반 데이터 모델을 변경할 수 있는 방법이 있어야 합니다. 이를 state를 통해 변경합니다
+    - 결과적으로 애플리케이션은 다음과 같은 state를 가집니다.
+    4. State가 어디에 있어야 할 지 찾기
+    - React는 항상 컴포넌트 계층구조를 따라 아래로 내려가는 단방향 데이터 흐름을 따릅니다. 
+    ○ state를 기반으로 렌더링하는 모든 컴포넌트를 찾으세요.
+    ○ 공통 소유 컴포넌트 (common owner component)를 찾으세요. (계층 구조 내에서 특정 state가 있어야 하는 모든 컴포넌트들의 상위에 있는 하나의 컴포넌트).
+    ○ 공통 혹은 더 상위에 있는 컴포넌트가 state를 가져야 합니다.
+    ○ state를 소유할 적절한 컴포넌트를 찾지 못하였다면, state를 소유하는 컴포넌트를 하나 만들어서 공통 오너 컴포넌트의 상위 계층에 추가하세요.
+    5. 역방향 데이터 흐름 추가하기
+    - React는 전통적인 양방향 데이터 바인딩(two-way data binding)과 비교하면 더 많은 타이핑을 필요로 하지만 데이터 흐름을 명시적으로 보이게 만들어서 프로그램이 어떻게 동작하는지 파악할 수 있게 도와줍니다.
+    - FilterableProductTable에서 전달된 콜백은 setState()를 호출하고 앱이 업데이트될 것입니다.
+
+
+# 12월 1일 학습내용
 ## Components와 Props
 
  - 이 함수는 데이터를 가진 하나의 속성을 나타내는 데이터이고 객체 인자를 받은 후 React 엘리먼트를 반환하므로 유효한 컴포넌트입니다.
